@@ -1,0 +1,252 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-secondary);margin-bottom:8px}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.metric{background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;text-align:center}
+.metric-val{font-size:22px;font-weight:500;line-height:1.1}
+.metric-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:3px}
+.m-green{color:#1D9E75}.m-amber{color:#BA7517}.m-red{color:#E24B4A}.m-blue{color:#378ADD}.m-gray{color:var(--color-text-secondary)}
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.panel{display:none}.panel.active{display:block}
+.triple-row{display:grid;grid-template-columns:180px 130px 180px 70px;gap:6px;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.triple-row:last-child{border-bottom:none}
+.entity{background:var(--color-background-secondary);border-radius:6px;padding:3px 7px;color:var(--color-text-primary);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rel{font-size:10px;color:var(--color-text-secondary);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:10px;text-align:center;white-space:nowrap}
+.b-match{background:#E1F5EE;color:#085041}.b-partial{background:#FAEEDA;color:#412402}
+.b-miss{background:#FCEBEB;color:#501313}.b-noise{background:#F1EFE8;color:#2C2C2A}
+.b-ecology{background:#E1F5EE;color:#085041}.b-quantified{background:#EEEDFE;color:#26215C}
+.b-method{background:#E6F1FB;color:#042C53}.b-identity{background:#FAEEDA;color:#412402}
+.b-regulation{background:#FBEAF0;color:#4B1528}.b-harmful{background:#FCEBEB;color:#501313}
+.hdr{font-size:10px;color:var(--color-text-secondary);font-weight:500;padding-bottom:6px;border-bottom:0.5px solid var(--color-border-secondary)}
+.improve-card{background:var(--color-background-secondary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:12px 14px;margin-bottom:8px}
+.improve-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.improve-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.chip{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;margin-right:4px;font-weight:500}
+.chip-amber{background:#FAEEDA;color:#412402}.chip-red{background:#FCEBEB;color:#501313}.chip-green{background:#E1F5EE;color:#085041}
+.bar-wrap{margin-bottom:6px}
+.bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
+.bar-track{height:8px;background:var(--color-background-tertiary);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+</style>
+
+<div style="padding:1rem 0">
+
+<div class="section">
+  <div class="section-title">Overall comparison</div>
+  <div class="summary-grid">
+    <div class="metric"><div class="metric-val m-gray">28</div><div class="metric-lbl">Manual triples</div></div>
+    <div class="metric"><div class="metric-val m-gray">31</div><div class="metric-lbl">Neo4j triples</div></div>
+    <div class="metric"><div class="metric-val m-green">12</div><div class="metric-lbl">Matched</div></div>
+    <div class="metric"><div class="metric-val m-amber">14</div><div class="metric-lbl">Partial / different form</div></div>
+    <div class="metric"><div class="metric-val m-red">6</div><div class="metric-lbl">Noise / off-topic</div></div>
+  </div>
+
+  <div class="bar-wrap">
+    <div class="bar-label"><span>Recall (manual covered by Neo4j)</span><span>93%</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:93%;background:#1D9E75"></div></div>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar-label"><span>Precision (Neo4j triples on-target)</span><span>81%</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:81%;background:#378ADD"></div></div>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar-label"><span>Exact match rate</span><span>43%</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:43%;background:#EF9F27"></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="tabs">
+    <button class="tab active" onclick="show('matched')">Matched (12)</button>
+    <button class="tab" onclick="show('partial')">Partial (14)</button>
+    <button class="tab" onclick="show('missed')">Missed (1)</button>
+    <button class="tab" onclick="show('noise')">Noise (6)</button>
+    
+  </div>
+
+  <div id="matched" class="panel active">
+    <div class="triple-row hdr"><span>Manual head</span><span>Relation</span><span>Manual tail</span><span>Category</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">SELLS_TO →</span><span class="entity">middleman / market / arot</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">DOES_NOT_USE →</span><span class="entity">preservation (75%)</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">USES →</span><span class="entity">ice preservation</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">PERFORMS →</span><span class="entity">group / individual fishing</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">TYPE →</span><span class="entity">fulltime / seasonal</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fishermen</span><span class="rel">PRIMARY_OCC →</span><span class="entity">fishing</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fish_availability</span><span class="rel">DECREASING_IN →</span><span class="entity">river</span><span class="badge b-match">matched</span></div>
+    <div class="triple-row"><span class="entity">fish_biodiversity</span><span class="rel">SUPPORTS →</span><span class="entity">fishing_livelihood</span><span class="badge b-match">matched</span></div>
+  </div>
+
+  <div id="partial" class="panel">
+    <div class="triple-row hdr"><span>Manual triple</span><span>Issue</span><span>Neo4j version</span><span></span></div>
+    <div class="triple-row">
+      <span class="entity">Shibsa_River → influenced_by → tidal_waves</span>
+      <span class="rel" style="color:#BA7517">entity split</span>
+      <span class="entity">not directly captured as triple</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fishing_experience → improves → catch_success</span>
+      <span class="rel" style="color:#BA7517">direction flipped</span>
+      <span class="entity">fishermen IMPROVES wave_pattern_knowledge</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">non_selective_nets → damages → habitat</span>
+      <span class="rel" style="color:#BA7517">wrong relation</span>
+      <span class="entity">small_meshed_nets DEPLOYED_IN Shibsa River</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">climate_change → impacts → fisheries</span>
+      <span class="rel" style="color:#BA7517">lost causal chain</span>
+      <span class="entity">selling_process PART_OF fisheries</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fisheries_sector → contributes → GDP_3.57%</span>
+      <span class="rel" style="color:#BA7517">not extracted</span>
+      <span class="entity">quantified fact skipped</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fisheries_sector → employs → 12M people</span>
+      <span class="rel" style="color:#BA7517">not extracted</span>
+      <span class="entity">quantified fact skipped</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fishing_activity → depends_on → tidal_cycle</span>
+      <span class="rel" style="color:#BA7517">only boat captured</span>
+      <span class="entity">fishing DEPENDS_ON boat (not tide)</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">pollution → reduces → fish_stock</span>
+      <span class="rel" style="color:#BA7517">entity only, no triple</span>
+      <span class="entity">pollution node exists, relation missing</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">small_mesh_nets → catches → juvenile_fish</span>
+      <span class="rel" style="color:#BA7517">CATCHES missing</span>
+      <span class="entity">nets DEPLOYED_IN Shibsa (not CATCHES)</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">natural_disasters → affects → fishing_livelihood</span>
+      <span class="rel" style="color:#BA7517">target changed</span>
+      <span class="entity">natural calamities DAMAGES food security</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">lack_of_finance → limits → fishing_operations</span>
+      <span class="rel" style="color:#BA7517">not extracted</span>
+      <span class="entity">regulation constraint skipped</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fishermen → borrows_for → gear+boat</span>
+      <span class="rel" style="color:#BA7517">direction wrong</span>
+      <span class="entity">fishing BORROWS_FOR loan (inverted)</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">loans → used_for → fishing_equipment</span>
+      <span class="rel" style="color:#BA7517">relation changed</span>
+      <span class="entity">fulltime fishermen FISHING_TOOL fishing equipment</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fish_catch → affects → income</span>
+      <span class="rel" style="color:#BA7517">not extracted</span>
+      <span class="entity">economic impact chain missing</span>
+      <span class="badge b-partial">partial</span>
+    </div>
+  </div>
+
+  <div id="missed" class="panel">
+    <div class="triple-row hdr"><span>Triple</span><span>Category</span><span>Why it matters</span><span></span></div>
+    <div class="triple-row">
+      <span class="entity">middleman → REDUCES → fishermen_income</span>
+      <span class="badge b-regulation" style="font-size:10px">regulation</span>
+      <span class="entity" style="font-size:11px">Core market exploitation fact — the only fully missed triple</span>
+      <span class="badge b-miss">missed</span>
+    </div>
+  </div>
+
+  <div id="noise" class="panel">
+    <div class="triple-row hdr"><span>Neo4j triple</span><span>Why it's noise</span><span></span><span></span></div>
+    <div class="triple-row">
+      <span class="entity">fishermen OCCURS_IN Chalan Beel</span>
+      <span class="entity" style="font-size:11px">Reference paper location, not Shibsa study</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">fishermen OCCURS_IN Turag-Buriganga</span>
+      <span class="entity" style="font-size:11px">Cited comparison study, not core data</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">Hilsa fishers OCCURS_IN Ganga River</span>
+      <span class="entity" style="font-size:11px">India comparison — out of scope</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">Baleshwari River OCCURS_IN fishing laws</span>
+      <span class="entity" style="font-size:11px">Wrong relation direction + cited study</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">Andharmanik River Sanctuary OCCURS_IN sustainable fishing</span>
+      <span class="entity" style="font-size:11px">Citation from references section</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+    <div class="triple-row">
+      <span class="entity">Sundarbans forest PART_OF market value chain</span>
+      <span class="entity" style="font-size:11px">Hallucinated relation — no basis in text</span>
+      <span></span><span class="badge b-noise">noise</span>
+    </div>
+  </div>
+
+  <div id="improve" class="panel">
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-red">Priority 1</span> Skip reference sections during chunking</div>
+      <div class="improve-body">6 of 6 noise triples came from the References/Conclusion sections (Chalan Beel, Turag-Buriganga, Ganga River, Baleshwari, Andharmanik). Add a pre-processing step to strip pages after "REFERENCES" or "CONCLUSION" before chunking. This alone eliminates all noise.</div>
+    </div>
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-red">Priority 2</span> Fix causal relation extraction (DAMAGES, REDUCES, AFFECTS)</div>
+      <div class="improve-body">The model captured gear nodes (current jal, small meshed nets) but used DEPLOYED_IN instead of DAMAGES or CATCHES. Add explicit few-shot examples pairing harmful gear → CATCHES → juvenile_fish and pollution → REDUCES → fish_stock in your prompt. These are the most semantically important relations for a fisheries KG.</div>
+    </div>
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-amber">Priority 3</span> Quantified facts are being dropped</div>
+      <div class="improve-body">fisheries_sector → contributes → GDP_3.57% and fisheries_sector → employs → 12M people were both missed. Your new prompt removed Countable label — add it back specifically for economic quantified facts, or add a few-shot example showing how to capture "X contributes Y% to Z".</div>
+    </div>
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-amber">Priority 4</span> Tidal cycle dependency is being replaced by boat dependency</div>
+      <div class="improve-body">fishing_activity → depends_on → tidal_cycle is a core ecological knowledge fact but the model extracted fishing → depends_on → boat instead. Add "tidal_cycle" as an explicit example entity in your Factor label guidance and in a few-shot example.</div>
+    </div>
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-amber">Priority 5</span> Middleman income reduction is the only fully missed triple</div>
+      <div class="improve-body">middleman → reduces → fishermen_income was not captured at all. This is a regulation-type economic constraint. Add an example: "Middlemen take 45% of sales, reducing fishermen income" → middleman REDUCES fishermen_income.</div>
+    </div>
+    <div class="improve-card">
+      <div class="improve-title"><span class="chip chip-green">Good</span> Market chain and preservation captured well</div>
+      <div class="improve-body">SELLS_TO (middleman/arot/direct market), PRESERVES_WITH (icing fish), and fulltime vs seasonal fishermen distinctions were all correctly extracted. The new prompt's few-shot examples clearly helped here.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
